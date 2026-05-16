@@ -39,5 +39,6 @@ class UserCreateSchema(BaseModel):
     avatar_url: HttpUrl | None = None
 
     model_config = ConfigDict(
+        extra="forbid",
         str_strip_whitespace=True,
     )

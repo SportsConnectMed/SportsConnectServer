@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import Any
 
 from app.modules.users.infrastructure.database.models.user_model import UserModel
 
@@ -9,7 +9,7 @@ class UserRepository(ABC):
     async def create(self, user: UserModel) -> UserModel: ...
 
     @abstractmethod
-    async def get_users(self) -> List[UserModel] | None: ...
+    async def get_users(self) -> list[UserModel] | None: ...
 
     @abstractmethod
     async def get_by_id(self, user_id: str) -> UserModel | None: ...
@@ -19,3 +19,13 @@ class UserRepository(ABC):
 
     @abstractmethod
     async def get_by_username(self, username: str) -> UserModel | None: ...
+
+    @abstractmethod
+    async def update_user(
+        self,
+        user_id: str,
+        update_data: dict[str, Any],
+    ) -> UserModel | None: ...
+
+    @abstractmethod
+    async def delete_user(self, user_id: str) -> None: ...
