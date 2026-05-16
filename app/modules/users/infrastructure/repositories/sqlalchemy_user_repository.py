@@ -47,3 +47,40 @@ class SQLAlchemyUserRepository(UserRepository):
         result = await self.db.execute(query)
 
         return result.scalar_one_or_none()
+
+    async def delete_user(self, user_id: str) -> None:
+        query = select(UserModel).where(UserModel.id == user_id)
+
+        result = await self.db.execute(query)
+
+        user = result.scalar_one_or_none()
+
+        if not user:
+            return None
+
+        user.is_active = False
+
+        await self.db.commit()
+        await self.db.refresh(user)
+
+    async def update_user(
+        self,
+        user_id: str,
+        update_data: dict[str, object],
+    ) -> UserModel | None:
+        query = select(UserModel).where(UserModel.id == user_id)
+
+        result = await self.db.execute(query)
+
+        user = result.scalar_one_or_none()
+
+        if not user:
+            return None
+
+        for key, value in update_data.items():
+            setattr(user, key, value)
+
+        await self.db.commit()
+        await self.db.refresh(user)
+
+        return user
