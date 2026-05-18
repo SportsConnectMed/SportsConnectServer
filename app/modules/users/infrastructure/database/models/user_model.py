@@ -1,10 +1,13 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from sqlalchemy import Boolean, DateTime, String
+from sqlalchemy import Boolean, DateTime, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
+from app.modules.users.domain.enums.skill_level import SkillLevel
+from app.modules.users.domain.enums.sport_type import SportType
+from app.modules.users.domain.enums.user_role import UserRole
 
 
 class UserModel(Base):
@@ -33,6 +36,32 @@ class UserModel(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    role: Mapped[UserRole] = mapped_column(
+        Enum(UserRole),
+        default=UserRole.USER,
+        nullable=False,
+    )
+
+    favorite_sport: Mapped[SportType | None] = mapped_column(
+        Enum(SportType),
+        nullable=True,
+    )
+
+    skill_level: Mapped[SkillLevel | None] = mapped_column(
+        Enum(SkillLevel),
+        nullable=True,
+    )
+
+    position: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+
+    bio: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True,
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

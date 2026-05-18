@@ -1,4 +1,5 @@
 from app.core.security import hash_password
+from app.modules.users.domain.enums.user_role import UserRole
 from app.modules.users.domain.repositories.user_repository import (
     UserRepository,
 )
@@ -26,14 +27,12 @@ class CreateUserUseCase:
         if existing_username:
             raise ValueError("Username already exsists")
 
-        hashed_password = hash_password(data.password)
+        user_data = data.model_dump(exclude={"password", "avatar_url"})
 
         user = UserModel(
-            username=data.username,
-            email=data.email,
-            hashed_password=hashed_password,
-            full_name=data.full_name,
-            city=data.city,
+            **user_data,
+            hashed_password=hash_password(data.password),
+            role=UserRole.USER,
             avatar_url=(str(data.avatar_url) if data.avatar_url else None),
         )
 

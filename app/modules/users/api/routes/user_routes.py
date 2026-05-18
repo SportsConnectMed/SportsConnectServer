@@ -1,5 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.modules.auth.api.dependencies.get_current_user import get_current_user
+from app.modules.auth.api.dependencies.require_admin_user import require_admin_user
+from app.modules.auth.api.dependencies.require_same_user_or_admin import (
+    require_same_user_or_admin,
+)
 from app.modules.users.api.dependencies.user_dependencies import (
     get_user_repository,
 )
@@ -18,6 +23,7 @@ from app.modules.users.application.use_cases.get_users_use_case import (
 from app.modules.users.application.use_cases.update_user_use_case import (
     UpdateUserUseCase,
 )
+from app.modules.users.infrastructure.database.models.user_model import UserModel
 from app.modules.users.infrastructure.repositories.sqlalchemy_user_repository import (
     SQLAlchemyUserRepository,
 )
@@ -43,6 +49,7 @@ router = APIRouter(
 )
 async def get_users(
     user_repository: SQLAlchemyUserRepository = Depends(get_user_repository),
+    _: UserModel = Depends(require_admin_user),
 ):
     use_case = GetUsersUserUseCase(user_repository)
 
@@ -52,8 +59,25 @@ async def get_users(
         total=len(users),
         active=len([u for u in users if u.is_active]),
         inactive=len([u for u in users if not u.is_active]),
-        users=[UserResponseSchema.model_validate(user) for user in users],
+        users=[
+            UserResponseSchema.model_validate(user) for user in users if user.is_active
+        ],
     )
+
+
+@router.get(
+    "/me",
+    response_model=UserResponseSchema,
+)
+async def get_user_me(
+    user_repository: SQLAlchemyUserRepository = Depends(get_user_repository),
+    current_user: UserModel = Depends(get_current_user),
+):
+    use_case = GetUserByIDUseCase(user_repository, current_user.id)
+
+    user = await use_case.execute()
+
+    return UserResponseSchema.model_validate(user)
 
 
 @router.get(
@@ -63,6 +87,7 @@ async def get_users(
 async def get_user_by_id(
     user_id: str,
     user_repository: SQLAlchemyUserRepository = Depends(get_user_repository),
+    _: UserModel = Depends(require_admin_user),
 ):
     use_case = GetUserByIDUseCase(user_repository, user_id)
 
@@ -101,6 +126,7 @@ async def update_user(
     user_id: str,
     data: UserUpdateSchema,
     user_respository: SQLAlchemyUserRepository = Depends(get_user_repository),
+    _: UserModel = Depends(require_same_user_or_admin),
 ):
     use_case = UpdateUserUseCase(user_respository, user_id, update_data=data)
 
@@ -122,6 +148,7 @@ async def update_user(
 async def delete_user(
     user_id: str,
     user_repository: SQLAlchemyUserRepository = Depends(get_user_repository),
+    _: UserModel = Depends(require_same_user_or_admin),
 ):
     use_case = DeleteUserUseCase(user_repository, user_id)
 
