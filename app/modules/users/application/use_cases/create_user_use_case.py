@@ -1,4 +1,5 @@
 from app.core.security import hash_password
+from app.modules.users.domain.enums.user_role import UserRole
 from app.modules.users.domain.repositories.user_repository import (
     UserRepository,
 )
@@ -33,6 +34,7 @@ class CreateUserUseCase:
             email=data.email,
             hashed_password=hashed_password,
             full_name=data.full_name,
+            role=UserRole.USER,
             city=data.city,
             avatar_url=(str(data.avatar_url) if data.avatar_url else None),
         )

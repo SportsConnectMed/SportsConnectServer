@@ -10,6 +10,7 @@ dependencies = [
     "fastapi[standard]>=0.136.1",
     "greenlet>=3.5.0",
     "pwdlib[argon2]>=0.3.0",
+    "pyjwt>=2.12.1",
     "python-dotenv>=1.2.2",
     "ruff>=0.15.13",
     "sqlalchemy>=2.0.49",

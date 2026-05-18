@@ -15,6 +15,8 @@ class UserResponseSchema(BaseModel):
     is_active: bool
     is_verified: bool
 
+    role: str
+
     created_at: datetime
     updated_at: datetime
 
