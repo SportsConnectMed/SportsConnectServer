@@ -8,6 +8,9 @@ from pydantic import (
     HttpUrl,
 )
 
+from app.modules.users.domain.enums.skill_level import SkillLevel
+from app.modules.users.domain.enums.sport_type import SportType
+
 UsernameField = Annotated[
     str,
     Field(min_length=3, max_length=30),
@@ -37,6 +40,14 @@ class UserCreateSchema(BaseModel):
     ] = None
 
     avatar_url: HttpUrl | None = None
+
+    favorite_sport: SportType | None = None
+
+    skill_level: SkillLevel | None = None
+
+    position: Annotated[str | None, Field(max_length=100)] = None
+
+    bio: Annotated[str | None, Field(max_length=500)] = None
 
     model_config = ConfigDict(
         extra="forbid",

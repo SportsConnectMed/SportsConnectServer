@@ -27,15 +27,12 @@ class CreateUserUseCase:
         if existing_username:
             raise ValueError("Username already exsists")
 
-        hashed_password = hash_password(data.password)
+        user_data = data.model_dump(exclude={"password", "avatar_url"})
 
         user = UserModel(
-            username=data.username,
-            email=data.email,
-            hashed_password=hashed_password,
-            full_name=data.full_name,
+            **user_data,
+            hashed_password=hash_password(data.password),
             role=UserRole.USER,
-            city=data.city,
             avatar_url=(str(data.avatar_url) if data.avatar_url else None),
         )
 
