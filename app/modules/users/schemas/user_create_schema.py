@@ -8,8 +8,8 @@ from pydantic import (
     HttpUrl,
 )
 
-from app.modules.users.domain.enums.skill_level import SkillLevel
-from app.modules.users.domain.enums.sport_type import SportType
+from app.common.enums.skill_level import SkillLevel
+from app.common.enums.sport_type import SportType
 
 UsernameField = Annotated[
     str,
