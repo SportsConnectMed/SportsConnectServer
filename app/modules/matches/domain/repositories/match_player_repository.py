@@ -11,3 +11,11 @@ class MatchPlayerRepository(ABC):
         self,
         match_player: MatchPlayerModel,
     ) -> MatchPlayerModel: ...
+
+    @abstractmethod
+    async def delete(): ...
+
+    @abstractmethod
+    async def get_by_match_and_user(
+        match_id: str, user_id: str
+    ) -> MatchPlayerModel | None: ...

@@ -19,7 +19,14 @@ class SQLAlchemyMatchRepository(MatchRepository):
     ) -> MatchModel:
         self.db.add(match)
 
-        await self.db.commit()
+        await self.db.flush()
+
+        return match
+
+    async def save(self, match: MatchModel) -> MatchModel:
+        self.db.add(match)
+
+        await self.db.flush()
 
         await self.db.refresh(match)
 

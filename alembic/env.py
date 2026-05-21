@@ -7,6 +7,10 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 from app.core.database import Base
 from app.core.settings import settings
+from app.modules.matches.infrastructure.database.models.match_model import MatchModel
+from app.modules.matches.infrastructure.database.models.match_player_model import (
+    MatchPlayerModel,
+)
 from app.modules.users.infrastructure.database.models.user_model import UserModel
 
 # this is the Alembic Config object, which provides

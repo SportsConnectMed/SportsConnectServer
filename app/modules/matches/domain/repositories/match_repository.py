@@ -13,6 +13,9 @@ class MatchRepository(ABC):
     ) -> MatchModel: ...
 
     @abstractmethod
+    async def save(self, match: MatchModel) -> MatchModel: ...
+
+    @abstractmethod
     async def get_by_id(
         self,
         match_id: str,

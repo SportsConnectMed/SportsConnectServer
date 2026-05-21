@@ -42,7 +42,7 @@ class MatchModel(Base):
         Enum(
             SportType,
             name="sporttype",
-            create_type=True,
+            create_type=False,
         ),
         nullable=False,
     )
@@ -51,7 +51,7 @@ class MatchModel(Base):
         Enum(
             SkillLevel,
             name="skilllevel",
-            create_type=True,
+            create_type=False,
         ),
         nullable=False,
     )
