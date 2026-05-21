@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 from app.common.enums.skill_level import SkillLevel
 from app.common.enums.sport_type import SportType
 from app.modules.matches.domain.enums.match_status import MatchStatus
+from app.modules.matches.schemas.match_player_response_schema import MatchPlayerResponseSchema
 
 
 class MatchResponseSchema(BaseModel):
@@ -23,6 +24,8 @@ class MatchResponseSchema(BaseModel):
     status: MatchStatus
 
     creator_id: str
+
+    players: list[MatchPlayerResponseSchema]
 
     scheduled_at: datetime
     created_at: datetime

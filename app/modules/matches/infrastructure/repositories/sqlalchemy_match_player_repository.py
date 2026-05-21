@@ -25,7 +25,11 @@ class SQLAlchemyMatchPlayerRepository(MatchPlayerRepository):
 
         return match_player
 
-    async def delete(self, match_player: MatchPlayerModel):
+    async def delete(
+        self,
+        match_player: MatchPlayerModel,
+    ) -> None:
+
         await self.db.delete(match_player)
 
     async def get_by_match_and_user(

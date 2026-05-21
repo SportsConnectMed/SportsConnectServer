@@ -1,11 +1,15 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.modules.matches.domain.repositories.match_repository import (
     MatchRepository,
 )
 from app.modules.matches.infrastructure.database.models.match_model import (
     MatchModel,
+)
+from app.modules.matches.infrastructure.database.models.match_player_model import (
+    MatchPlayerModel,
 )
 
 
@@ -32,19 +36,29 @@ class SQLAlchemyMatchRepository(MatchRepository):
 
         return match
 
+    async def get_all(self) -> list[MatchModel]:
+
+        statement = select(MatchModel).options(
+            selectinload(MatchModel.players).selectinload(MatchPlayerModel.user)
+        )
+
+        result = await self.db.execute(statement)
+
+        return list(result.scalars().all())
+
     async def get_by_id(
         self,
         match_id: str,
     ) -> MatchModel | None:
-        result = await self.db.execute(
-            select(MatchModel).where(MatchModel.id == match_id)
+
+        statement = (
+            select(MatchModel)
+            .where(MatchModel.id == match_id)
+            .options(
+                selectinload(MatchModel.players).selectinload(MatchPlayerModel.user)
+            )
         )
 
+        result = await self.db.execute(statement)
+
         return result.scalar_one_or_none()
-
-    async def get_all(
-        self,
-    ) -> list[MatchModel]:
-        result = await self.db.execute(select(MatchModel))
-
-        return list(result.scalars().all())

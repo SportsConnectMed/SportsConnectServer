@@ -13,7 +13,10 @@ class MatchPlayerRepository(ABC):
     ) -> MatchPlayerModel: ...
 
     @abstractmethod
-    async def delete(): ...
+    async def delete(
+        self,
+        match_player: MatchPlayerModel,
+    ) -> None: ...
 
     @abstractmethod
     async def get_by_match_and_user(
