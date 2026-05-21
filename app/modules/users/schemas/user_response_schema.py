@@ -15,6 +15,13 @@ class UserResponseSchema(BaseModel):
     is_active: bool
     is_verified: bool
 
+    role: str
+
+    favorite_sport: str | None
+    skill_level: str | None
+    position: str | None
+    bio: str | None
+
     created_at: datetime
     updated_at: datetime
 
