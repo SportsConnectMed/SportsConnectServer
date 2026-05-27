@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.users.domain.repositories.user_repository import UserRepository
@@ -19,12 +19,45 @@ class SQLAlchemyUserRepository(UserRepository):
 
         return user
 
-    async def get_users(self) -> list[UserModel] | None:
-        query = select(UserModel)
+    async def get_users(
+        self,
+        page: int = 1,
+        page_size: int = 10,
+    ) -> list[UserModel] | None:
+        query = select(UserModel).offset((page - 1) * page_size).limit(page_size)
 
         result = await self.db.execute(query)
 
         return list(result.scalars().all())
+
+    async def count_users(self) -> int:
+        query = select(func.count()).select_from(UserModel)
+
+        result = await self.db.execute(query)
+
+        return result.scalar_one()
+
+    async def count_active_users(self) -> int:
+        query = (
+            select(func.count())
+            .select_from(UserModel)
+            .where(UserModel.is_active.is_(True))
+        )
+
+        result = await self.db.execute(query)
+
+        return result.scalar_one()
+
+    async def count_inactive_users(self) -> int:
+        query = (
+            select(func.count())
+            .select_from(UserModel)
+            .where(UserModel.is_active.is_(False))
+        )
+
+        result = await self.db.execute(query)
+
+        return result.scalar_one()
 
     async def get_by_id(self, user_id: str) -> UserModel | None:
 

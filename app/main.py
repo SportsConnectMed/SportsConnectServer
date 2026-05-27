@@ -6,9 +6,11 @@ from app.modules.users.api.routes.user_routes import router as user_router
 
 app = FastAPI()
 
-app.include_router(user_router)
-app.include_router(auth_router)
-app.include_router(match_router)
+API_PREFIX = "/api/v1"
+
+app.include_router(user_router, prefix=API_PREFIX)
+app.include_router(auth_router, prefix=API_PREFIX)
+app.include_router(match_router, prefix=API_PREFIX)
 
 
 @app.get("/")

@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from math import ceil
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.modules.auth.api.dependencies.get_current_user import get_current_user
 from app.modules.auth.api.dependencies.require_admin_user import require_admin_user
@@ -48,20 +50,28 @@ router = APIRouter(
     response_model=UserListResponseSchema,
 )
 async def get_users(
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, ge=1, le=100),
     user_repository: SQLAlchemyUserRepository = Depends(get_user_repository),
     _: UserModel = Depends(require_admin_user),
 ):
     use_case = GetUsersUserUseCase(user_repository)
 
-    users = await use_case.execute()
+    result = await use_case.execute(
+        page=page,
+        page_size=page_size,
+    )
 
+    users = result["users"]
+    total = result["total"]
     return UserListResponseSchema(
-        total=len(users),
-        active=len([u for u in users if u.is_active]),
-        inactive=len([u for u in users if not u.is_active]),
-        users=[
-            UserResponseSchema.model_validate(user) for user in users if user.is_active
-        ],
+        page=page,
+        page_size=page_size,
+        total=total,
+        total_pages=ceil(total / page_size) if total else 0,
+        active=result["active"],
+        inactive=result["inactive"],
+        users=[UserResponseSchema.model_validate(user) for user in users],
     )
 
 
@@ -97,7 +107,7 @@ async def get_user_by_id(
 
 
 @router.post(
-    "",
+    "/register",
     response_model=UserResponseSchema,
     status_code=status.HTTP_201_CREATED,
 )
