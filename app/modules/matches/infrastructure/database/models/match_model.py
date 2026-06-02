@@ -97,6 +97,14 @@ class MatchModel(Base):
         cascade="all, delete-orphan",
     )
 
+    latitude: Mapped[float | None] = mapped_column(
+        nullable=True
+    )
+
+    longitude: Mapped[float | None] = mapped_column(
+        nullable=True
+    )
+
     scheduled_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

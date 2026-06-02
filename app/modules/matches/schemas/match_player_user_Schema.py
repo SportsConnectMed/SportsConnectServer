@@ -8,6 +8,8 @@ class MatchPlayerUserSchema(BaseModel):
     id: str
     username: str
 
+    position: str | None
+
     favorite_sport: SportType | None
     skill_level: SkillLevel | None
 

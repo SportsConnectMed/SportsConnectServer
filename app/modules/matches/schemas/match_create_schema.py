@@ -34,6 +34,10 @@ class MatchCreateSchema(BaseModel):
 
     scheduled_at: datetime
 
+    latitude: float | None = None
+
+    longitude: float | None = None
+
     model_config = ConfigDict(
         extra="forbid",
         str_strip_whitespace=True,

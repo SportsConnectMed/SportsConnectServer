@@ -61,7 +61,7 @@ async def get_matches(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=10, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
-    _: UserModel = Depends(get_current_user),
+    current_user: UserModel = Depends(get_current_user),
 ):
 
     repository = SQLAlchemyMatchRepository(db)
@@ -69,6 +69,7 @@ async def get_matches(
     use_case = GetMatchesUseCase(repository)
 
     result = await use_case.execute(
+        current_user_id=current_user.id,
         sport=sport,
         skill_level=skill_level,
         status=status,
@@ -134,14 +135,17 @@ async def get_my_matches(
 async def get_match(
     match_id: str,
     db: AsyncSession = Depends(get_db),
-    _: UserModel = Depends(get_current_user),
+    current_user: UserModel = Depends(get_current_user),
 ):
 
     repository = SQLAlchemyMatchRepository(db)
 
     use_case = GetMatchByIdUseCase(repository)
 
-    match = await use_case.execute(match_id)
+    match = await use_case.execute(
+        match_id=match_id,
+        current_user_id=current_user.id,
+    )
 
     return MatchResponseSchema.model_validate(match)
 
@@ -197,7 +201,7 @@ async def join_match(
         user_id=current_user.id,
     )
 
-    return MatchResponseSchema.model_validate(match)
+    return MatchResponseSchema.from_match(match, current_user.id)
 
 
 @router.post(
@@ -226,7 +230,7 @@ async def leave_match(
         user_id=current_user.id,
     )
 
-    return MatchResponseSchema.model_validate(match)
+    return MatchResponseSchema.from_match(match, current_user.id)
 
 
 @router.post(
@@ -252,7 +256,7 @@ async def cancel_match(
         user_id=current_user.id,
     )
 
-    return MatchResponseSchema.model_validate(match)
+    return MatchResponseSchema.from_match(match, current_user.id)
 
 
 @router.delete(
@@ -283,7 +287,7 @@ async def kick_player(
             kicked_user_id=user_id,
         )
 
-        return MatchResponseSchema.model_validate(match)
+        return MatchResponseSchema.from_match(match, current_user.id)
 
     except ValueError as error:
         raise HTTPException(

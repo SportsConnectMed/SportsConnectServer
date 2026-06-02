@@ -65,6 +65,8 @@ class JoinMatchUseCase:
 
             await self.db.commit()
 
+            match.is_joined = True
+
             return match
 
         except ValueError as error:

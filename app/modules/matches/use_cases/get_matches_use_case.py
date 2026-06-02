@@ -26,6 +26,7 @@ class GetMatchesUseCase:
         location: str | None = None,
         page: int = 1,
         page_size: int = 10,
+        current_user_id: str | None = None,
     ):
 
         matches = await self.match_repository.get_all(
@@ -41,6 +42,10 @@ class GetMatchesUseCase:
             page=page,
             page_size=page_size,
         )
+
+        if current_user_id is not None:
+            for match in matches:
+                match.is_joined = self._is_user_joined(match, current_user_id)
 
         total = await self.match_repository.count_all(
             sport=sport,
@@ -58,3 +63,7 @@ class GetMatchesUseCase:
             "matches": matches,
             "total": total,
         }
+
+    @staticmethod
+    def _is_user_joined(match, current_user_id: str) -> bool:
+        return any(player.user_id == current_user_id for player in match.players)

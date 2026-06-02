@@ -21,9 +21,16 @@ class GetMyMatchesUseCase:
             page_size=page_size,
         )
 
+        for match in matches:
+            match.is_joined = self._is_user_joined(match, user_id)
+
         total = await self.match_repository.count_my_matches(user_id=user_id)
 
         return {
             "matches": matches,
             "total": total,
         }
+
+    @staticmethod
+    def _is_user_joined(match, user_id: str) -> bool:
+        return any(player.user_id == user_id for player in match.players)

@@ -37,13 +37,7 @@ class CreateMatchUseCase:
 
         try:
             match = MatchModel(
-                title=data.title,
-                description=data.description,
-                sport=data.sport,
-                skill_level=data.skill_level,
-                location=data.location,
-                max_players=data.max_players,
-                scheduled_at=data.scheduled_at,
+                **data.model_dump(),
                 creator_id=creator_id,
             )
 
